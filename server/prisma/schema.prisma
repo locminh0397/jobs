@@ -1,0 +1,118 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// file: schema.prisma
+
+// define the User model
+model User {
+  id           String        @id @default(uuid())
+  full_name    String
+  email        String        @unique
+  hash         String?
+  avatar_url   String?
+  role         String        @default("STUDENT")
+  phone        String?       @default("Chưa cập nhật")
+  city         String?       @default("Hà Nội")
+  state        String?       @default("Quận Ba Đình")
+  address      String?       @default("Chưa cập nhật")
+  resume       String?
+  industry     String?       @default("Kế toán/Kiểm toán")
+  education    Education[]
+  experience   Experience[]
+  applications Application[]
+  save_jobs    SaveJob[]
+  created_at   DateTime      @default(now())
+  updated_at   DateTime      @updatedAt
+}
+
+model Education {
+  id          String   @id @default(uuid())
+  school_name String
+  start_year  String
+  end_year    String
+  gpa_score   Float
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  user        User     @relation(fields: [user_id], references: [id])
+  user_id     String
+}
+
+model Experience {
+  id           String   @id @default(uuid())
+  company_name String
+  level        String
+  started_at   DateTime
+  end_at       DateTime
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  user         User     @relation(fields: [user_id], references: [id])
+  user_id      String
+}
+
+model SaveJob {
+  id      String @id @default(uuid())
+  user    User   @relation(fields: [user_id], references: [id])
+  user_id String
+  job     Job    @relation(fields: [job_id], references: [id])
+  job_id  String
+}
+
+// define the Job model
+model Job {
+  id            String        @id @default(uuid())
+  title         String
+  description   String
+  requirements  String
+  from_salary   Int?
+  to_salary     Int?
+  hidden_salary Boolean       @default(false)
+  location      String?
+  job_type      String
+  industry      String
+  company       Company       @relation(fields: [company_id], references: [id])
+  company_id    String
+  created_at    DateTime      @default(now())
+  updated_at    DateTime      @updatedAt
+  applications  Application[]
+  save_jobs     SaveJob[]
+}
+
+model Company {
+  id             String   @id @default(uuid())
+  user_name      String   @unique
+  hash           String
+  role           String   @default("EMPLOYER")
+  name_company   String
+  email_company  String   @unique
+  total_employee String?
+  address        String?
+  about          String?
+  industry       String[]
+  facebook_url   String?
+  linkedin_url   String?
+  logo_url       String?
+  website_url    String?
+  jobs           Job[]
+}
+
+// define the Application model
+model Application {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  job       Job      @relation(fields: [jobId], references: [id])
+  jobId     String
+  status    String   @default("Đang chờ")
+  appliedAt DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

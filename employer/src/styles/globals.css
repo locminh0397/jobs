@@ -1,0 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.mantine-Modal-body .mantine-1l70tev {
+  @apply !bg-red-500;
+}
